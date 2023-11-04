@@ -1,7 +1,6 @@
 function normalizeURL(url) {
-  return url.split('//')
-            .at(1)
-            .replace(/(\/$)/, '')
+  const urlObj = new URL(url)
+  return `${urlObj.hostname}${urlObj.pathname}`.replace(/(\/$)/, '')
 }
 
 module.exports = {
