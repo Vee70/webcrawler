@@ -30,8 +30,32 @@ function getURLsFromHTML(htmlBody, baseURL) {
   return urls
 }
 
+async function crawlPage(baseURL) {
+  try {
+    const response = await fetch(baseURL)
+    const statusCode = response.status
+    if (statusCode > 399 && statusCode < 500) {
+      console.log('Client error')
+      return
+    } else if (statusCode > 499) {
+      console.log('Server error')
+      return
+    }
+    const contentType = response.headers.get('content-type')
+    if (!contentType.includes('text/html')) {
+      console.log('content-type is not text/html')
+      return
+    }
+    const htmlText = await response.text()
+    console.log(htmlText)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 
 module.exports = {
   normalizeURL,
-  getURLsFromHTML
+  getURLsFromHTML,
+  crawlPage
 }
