@@ -8,13 +8,23 @@ function normalizeURL(url) {
 
 function getURLsFromHTML(htmlBody, baseURL) {
   const dom = new JSDOM(htmlBody)
-  const baseUrlObj = new URL(baseURL)
   const queryResults = dom.window.document.querySelectorAll('a')
   const urls = []
-  for (const url of queryResults) {
-    const urlObj = new URL(url.href)
-    if (baseUrlObj.host === urlObj.host) {
-      urls.push(urlObj.href)
+  for (const queryRes of queryResults) {
+    if (queryRes.href[0] === '/') {
+      try {
+        const urlObj = new URL(queryRes.href, baseURL)
+        urls.push(urlObj.href)
+      } catch (err) {
+        console.log(err)
+      }
+    } else {
+      try {
+        const urlObj = new URL(queryRes.href)
+        urls.push(urlObj.href)
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
   return urls
