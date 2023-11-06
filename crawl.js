@@ -30,8 +30,29 @@ function getURLsFromHTML(htmlBody, baseURL) {
   return urls
 }
 
-async function crawlPage(baseURL) {
+async function crawlPage(baseURL, currentURL, pages) {
   try {
+    // 1. make sure that baseURL and currentURL have the same domain
+    const baseUrlObj = new URL(baseURL)
+    const currentUrlObj = new URL(currentURL)
+    if (baseUrlObj.host !== currentUrlObj.host) {
+      return pages
+    }
+    // 2. net a normalize version of the currentURL
+    const currentUrlNormalized = normalizeURL(currentURL)
+    // 3. check if the pages object has an entry for the normalized url
+    if (pages[currentUrlNormalized] > 0) {
+      pages[currentUrlNormalized] += 1
+      return pages
+    }
+    // 4. add an entry to pages object
+    if (currentURL !== baseURL) {
+      pages[currentUrlNormalized] = 1
+    } else {
+      pages[currentUrlNormalized] = 0
+    }
+    // 5.make a request to th currentURL
+    console.log(`current URL: ${currentURL}`)
     const response = await fetch(baseURL)
     const statusCode = response.status
     if (statusCode > 399 && statusCode < 500) {
@@ -47,7 +68,14 @@ async function crawlPage(baseURL) {
       return
     }
     const htmlText = await response.text()
-    console.log(htmlText)
+    // 6. get urls from the response htmlText
+    const urls = getURLsFromHTML(htmlText, baseURL)
+    // 7. recursively crawl each url
+    for (const url of urls) {
+      pages = await crawlPage(baseURL, url, pages)
+    }
+    // 8. return pages object
+    return pages
   } catch (err) {
     console.log(err)
   }
