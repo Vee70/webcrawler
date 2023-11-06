@@ -12,8 +12,13 @@ function sortPage(pages) {
 }
 
 function printReport(pages) {
+  console.log('\n*** Report ***')
+  console.log('Start ==================================================\n')
   const sortedPages = sortPage(pages)
-  console.log(sortedPages)
+  for (const [url, count] of Object.entries(sortedPages)) {
+    console.log(`  Found ${count} internal links to ${url}`)
+  }
+  console.log('\nEnd ====================================================')
 }
 
 module.exports = {
