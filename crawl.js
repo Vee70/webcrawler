@@ -53,19 +53,19 @@ async function crawlPage(baseURL, currentURL, pages) {
     }
     // 5.make a request to th currentURL
     console.log(`current URL: ${currentURL}`)
-    const response = await fetch(baseURL)
+    const response = await fetch(currentURL)
     const statusCode = response.status
     if (statusCode > 399 && statusCode < 500) {
       console.log('Client error')
-      return
+      return pages
     } else if (statusCode > 499) {
       console.log('Server error')
-      return
+      return pages
     }
     const contentType = response.headers.get('content-type')
     if (!contentType.includes('text/html')) {
       console.log('content-type is not text/html')
-      return
+      return pages
     }
     const htmlText = await response.text()
     // 6. get urls from the response htmlText
